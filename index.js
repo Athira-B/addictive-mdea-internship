@@ -44,9 +44,14 @@ con.query(sql, function (err, result) {
 
   app.post('/api/v1/upload',upload.single('profile'), async (req, res)=> {
     const buffer=await sharp(req.file.buffer).resize({width:250,height:250}).png().toBuffer()
-
-    const zip = zlib.gzipSync(JSON.stringify(buffer)).toString('base64');
-    var sql = "INSERT INTO file (name,type,size ) VALUES ('" +  buffer + "', '"+req.file.mimetype+"', '"+req.file.size+"')";
+   
+     const zip = JSON.stringify(buffer).toString('base64');
+    var sql = "INSERT INTO file (name,type,size ) VALUES ('" +  zip + "', '"+req.file.mimetype+"', '"+req.file.size+"')";
+    
+    var obj = JSON.parse(zip); 
+    var buf = Buffer.from(obj, 'base64'); 
+    // res.set('Content-Type','image/png')
+    res.send("suc")
     con.query(sql, function (err, result) {
       if (err) throw err;
       console.log("1 record inserted");
@@ -59,9 +64,10 @@ con.query(sql, function (err, result) {
     con.query("SELECT * FROM file", function (err, result, fields) {
         if (err) throw err;
         //console.log(result[0].name);
-        const originalObj = JSON.parse(zlib.unzipSync(Buffer.from(result[0].name, 'base64')));
+        const originalObj = JSON.parse(result[0].name)
+        var buf = Buffer.from(originalObj, 'base64'); 
         res.set('Content-Type','image/png')
-        res.send(originalObj)
+        res.send(buf)
         
       });
     
