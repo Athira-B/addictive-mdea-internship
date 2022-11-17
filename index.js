@@ -1,9 +1,12 @@
 var mysql = require("mysql");
 var multer = require("multer");
 var express = require("express");
+const cors=require("cors")
 var pdf = require("pdf-creator-node");
+const axios = require('axios');
 var fs = require("fs");
 var zlib = require("zlib");
+const { json } = require("express");
 const sharp = require("sharp"),
   routes = express.Router(),
   http = require("http"),
@@ -12,10 +15,12 @@ const sharp = require("sharp"),
   bodyParser = require("body-parser");
 const PORT = process.env.PORT || 8000;
 
+//app.use(cors);
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors())
 app.use(express.static(path.join(__dirname, "public")));
 app.listen(PORT, function () {
   console.log("Node.js server is running on port " + PORT);
@@ -54,18 +59,20 @@ app.get("/pdf", (req, res) => {
   stream.pipe(res);
 });
 
-app.post(
-  "/api/v1/upload",
+app.post("/api/v1/upload",
   upload.single("resume"),
   async (req, res) => {
-    const buffer = await req.file.buffer;
+    console.log()
+    const buffer = await req.body.resume.buffer;
     const zip = JSON.stringify(buffer).toString("base64");
     var sql =
-      "INSERT INTO file (name,dob,resumebuffer,resumename,resumesize ) VALUES ('" +
+      "INSERT INTO file (name,dob,country,resumebuffer,resumename,resumesize ) VALUES ('" +
       req.body.name +
       "','" +
       req.body.dob +
-      "', '" +
+      "','" +
+      req.body.country +
+      "' ,'" +
       zip +
       "','" +
       req.file.filename +
@@ -116,3 +123,21 @@ app.get("/api/getimage", (req, res) => {
     res.send(buf);
   });
 });
+
+app.get("/countries",async(req,res)=>{
+
+
+axios.get('https://restcountries.com/v3.1/all')
+  .then(response => {
+    res.contentType("application/json")
+    console.log(response.data[0].name.official)
+    response.data.forEach((a)=>{
+console.log(a.name.official)
+    })
+    res.send(response.data);
+    //console.log(response);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+})
