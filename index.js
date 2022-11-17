@@ -63,7 +63,7 @@ app.post("/api/v1/upload",
   upload.single("resume"),
   async (req, res) => {
     console.log()
-    const buffer = await req.body.resume.buffer;
+    const buffer = await req.file.buffer;
     const zip = JSON.stringify(buffer).toString("base64");
     var sql =
       "INSERT INTO file (name,dob,country,resumebuffer,resumename,resumesize ) VALUES ('" +

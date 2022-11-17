@@ -8,6 +8,12 @@
         var dateValue = document.getElementById("date").value;
         var fileValue = document.getElementById("file").files[0];
         var countryValue = document.getElementById("country-select").value;
+        var formdata = new FormData();
+        formdata.append('resume',fileValue)
+        formdata.append("name", nameValue);
+        formdata.append('date',dateValue);
+        formdata.append('country',countryValue);
+
        const data={
         name:nameValue,
         date:dateValue,
@@ -21,7 +27,7 @@
                     'Content-Type': 'application/json',
                    
                 },
-                body: JSON.stringify(data)
+                body: formdata
                 
             })
             .then(res => res.json())
@@ -171,11 +177,9 @@ document.getElementById('select').innerHTML+=select
     <div class="main-block">
       <div class="left-part">
         <i class="fas fa-graduation-cap"></i>
-        <h1>Register to our courses</h1>
-        <p>W3docs provides free learning materials for programming languages like HTML, CSS, Java Script, PHP etc.</p>
+
         <div class="btn-group">
-          <a class="btn-item" href="https://www.w3docs.com/learn-html.html">Learn HTML</a>
-          <a class="btn-item" href="https://www.w3docs.com/quiz/#">Select Quiz</a>
+
         </div>
       </div>
       <form action="/">
@@ -193,7 +197,7 @@ document.getElementById('select').innerHTML+=select
 
         </div>
         <div class="checkbox">
-          <input type="checkbox" name="checkbox"><span>I agree to the <a href="https://www.w3docs.com/privacy-policy">Privacy Poalicy for W3Docs.</a></span>
+
         </div>
         <button onclick="onclicked()" type="button" href="/">Submit</button>
       </form>
